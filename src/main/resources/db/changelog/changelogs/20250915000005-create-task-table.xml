@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="20250915000005-1" author="gabriel_lima">
+        <createTable tableName="task">
+            <column name="id" type="uuid" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="deadline" type="timestamp"/>
+            <column name="estimated_hours" type="double"/>
+            <column name="sequence" type="int4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sprint_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="root_task_id" type="uuid"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="task"
+                                 baseColumnNames="sprint_id"
+                                 referencedTableName="sprint"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_task_sprint"/>
+
+        <addForeignKeyConstraint baseTableName="task"
+                                 baseColumnNames="root_task_id"
+                                 referencedTableName="task"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_task_root_task"/>
+    </changeSet>
+</databaseChangeLog>

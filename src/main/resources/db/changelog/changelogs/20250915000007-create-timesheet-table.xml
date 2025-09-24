@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+
+    <changeSet id="20250915000007-1" author="gabriel_lima">
+        <createTable tableName="timesheet">
+            <column name="id" type="uuid" defaultValueComputed="uuid_generate_v4()">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="hours_worked" type="double">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="user_id" type="uuid"/>
+            <column name="task_id" type="uuid"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="timesheet"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_timesheet_user"/>
+
+        <addForeignKeyConstraint baseTableName="timesheet"
+                                 baseColumnNames="task_id"
+                                 referencedTableName="task"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_timesheet_task"/>
+    </changeSet>
+</databaseChangeLog>
