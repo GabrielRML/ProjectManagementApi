@@ -1,7 +1,6 @@
 package com.gabriel_lima.project_management.controllers;
 
-import com.gabriel_lima.project_management.dto.TimesheetCreateDTO;
-import com.gabriel_lima.project_management.dto.TimesheetDTO;
+import com.gabriel_lima.project_management.dto.*;
 import com.gabriel_lima.project_management.services.TimesheetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,32 +17,33 @@ public class TimesheetController {
     private TimesheetService timesheetService;
 
     @GetMapping
-    public ResponseEntity<List<TimesheetDTO>> getAllTimesheets() {
+    public ResponseEntity<ApiResponseDTO<List<TimesheetDTO>>> getAllTimesheets() {
         List<TimesheetDTO> timesheets = timesheetService.getAllTimesheets();
-        return ResponseEntity.ok(timesheets);
+        return ResponseEntity.ok(ApiResponseDTO.success(timesheets, "Timesheets recuperados com sucesso"));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TimesheetDTO> getTimesheetById(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<TimesheetDTO>> getTimesheetById(@PathVariable String id) {
         TimesheetDTO timesheet = timesheetService.getTimesheetById(id);
-        return ResponseEntity.ok(timesheet);
+        return ResponseEntity.ok(ApiResponseDTO.success(timesheet, "Timesheet encontrado com sucesso"));
     }
 
     @PostMapping
-    public ResponseEntity<TimesheetDTO> createTimesheet(@RequestBody TimesheetCreateDTO createDTO) {
+    public ResponseEntity<ApiResponseDTO<TimesheetDTO>> createTimesheet(@RequestBody TimesheetCreateDTO createDTO) {
         TimesheetDTO createdTimesheet = timesheetService.createTimesheet(createDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTimesheet);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.success(createdTimesheet, "Timesheet criado com sucesso"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TimesheetDTO> updateTimesheet(@PathVariable String id, @RequestBody TimesheetCreateDTO updateDTO) {
+    public ResponseEntity<ApiResponseDTO<TimesheetDTO>> updateTimesheet(@PathVariable String id, @RequestBody TimesheetCreateDTO updateDTO) {
         TimesheetDTO updatedTimesheet = timesheetService.updateTimesheet(id, updateDTO);
-        return ResponseEntity.ok(updatedTimesheet);
+        return ResponseEntity.ok(ApiResponseDTO.success(updatedTimesheet, "Timesheet atualizado com sucesso"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTimesheet(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<Void>> deleteTimesheet(@PathVariable String id) {
         timesheetService.deleteTimesheet(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.success(null, "Timesheet excluído com sucesso"));
     }
 }

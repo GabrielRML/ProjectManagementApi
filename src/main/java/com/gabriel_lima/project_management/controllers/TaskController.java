@@ -1,7 +1,6 @@
 package com.gabriel_lima.project_management.controllers;
 
-import com.gabriel_lima.project_management.dto.TaskCreateDTO;
-import com.gabriel_lima.project_management.dto.TaskDTO;
+import com.gabriel_lima.project_management.dto.*;
 import com.gabriel_lima.project_management.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,32 +17,33 @@ public class TaskController {
     private TaskService taskService;
 
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> getAllTasks() {
+    public ResponseEntity<ApiResponseDTO<List<TaskDTO>>> getAllTasks() {
         List<TaskDTO> tasks = taskService.getAllTasks();
-        return ResponseEntity.ok(tasks);
+        return ResponseEntity.ok(ApiResponseDTO.success(tasks, "Tarefas recuperadas com sucesso"));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<TaskDTO>> getTaskById(@PathVariable String id) {
         TaskDTO task = taskService.getTaskById(id);
-        return ResponseEntity.ok(task);
+        return ResponseEntity.ok(ApiResponseDTO.success(task, "Tarefa encontrada com sucesso"));
     }
 
     @PostMapping
-    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskCreateDTO createDTO) {
+    public ResponseEntity<ApiResponseDTO<TaskDTO>> createTask(@RequestBody TaskCreateDTO createDTO) {
         TaskDTO createdTask = taskService.createTask(createDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.success(createdTask, "Tarefa criada com sucesso"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskDTO> updateTask(@PathVariable String id, @RequestBody TaskCreateDTO updateDTO) {
+    public ResponseEntity<ApiResponseDTO<TaskDTO>> updateTask(@PathVariable String id, @RequestBody TaskCreateDTO updateDTO) {
         TaskDTO updatedTask = taskService.updateTask(id, updateDTO);
-        return ResponseEntity.ok(updatedTask);
+        return ResponseEntity.ok(ApiResponseDTO.success(updatedTask, "Tarefa atualizada com sucesso"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<Void>> deleteTask(@PathVariable String id) {
         taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.success(null, "Tarefa excluída com sucesso"));
     }
 }

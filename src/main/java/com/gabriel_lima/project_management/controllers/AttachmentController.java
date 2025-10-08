@@ -1,7 +1,6 @@
 package com.gabriel_lima.project_management.controllers;
 
-import com.gabriel_lima.project_management.dto.AttachmentCreateDTO;
-import com.gabriel_lima.project_management.dto.AttachmentDTO;
+import com.gabriel_lima.project_management.dto.*;
 import com.gabriel_lima.project_management.services.AttachmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,32 +17,33 @@ public class AttachmentController {
     private AttachmentService attachmentService;
 
     @GetMapping
-    public ResponseEntity<List<AttachmentDTO>> getAllAttachments() {
+    public ResponseEntity<ApiResponseDTO<List<AttachmentDTO>>> getAllAttachments() {
         List<AttachmentDTO> attachments = attachmentService.getAllAttachments();
-        return ResponseEntity.ok(attachments);
+        return ResponseEntity.ok(ApiResponseDTO.success(attachments, "Anexos recuperados com sucesso"));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AttachmentDTO> getAttachmentById(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<AttachmentDTO>> getAttachmentById(@PathVariable String id) {
         AttachmentDTO attachment = attachmentService.getAttachmentById(id);
-        return ResponseEntity.ok(attachment);
+        return ResponseEntity.ok(ApiResponseDTO.success(attachment, "Anexo encontrado com sucesso"));
     }
 
     @PostMapping
-    public ResponseEntity<AttachmentDTO> createAttachment(@RequestBody AttachmentCreateDTO createDTO) {
+    public ResponseEntity<ApiResponseDTO<AttachmentDTO>> createAttachment(@RequestBody AttachmentCreateDTO createDTO) {
         AttachmentDTO createdAttachment = attachmentService.createAttachment(createDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdAttachment);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.success(createdAttachment, "Anexo criado com sucesso"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AttachmentDTO> updateAttachment(@PathVariable String id, @RequestBody AttachmentCreateDTO updateDTO) {
+    public ResponseEntity<ApiResponseDTO<AttachmentDTO>> updateAttachment(@PathVariable String id, @RequestBody AttachmentCreateDTO updateDTO) {
         AttachmentDTO updatedAttachment = attachmentService.updateAttachment(id, updateDTO);
-        return ResponseEntity.ok(updatedAttachment);
+        return ResponseEntity.ok(ApiResponseDTO.success(updatedAttachment, "Anexo atualizado com sucesso"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAttachment(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<Void>> deleteAttachment(@PathVariable String id) {
         attachmentService.deleteAttachment(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.success(null, "Anexo excluído com sucesso"));
     }
 }

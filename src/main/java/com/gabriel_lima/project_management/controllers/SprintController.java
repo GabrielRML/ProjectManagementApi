@@ -1,7 +1,6 @@
 package com.gabriel_lima.project_management.controllers;
 
-import com.gabriel_lima.project_management.dto.SprintCreateDTO;
-import com.gabriel_lima.project_management.dto.SprintDTO;
+import com.gabriel_lima.project_management.dto.*;
 import com.gabriel_lima.project_management.services.SprintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,32 +17,33 @@ public class SprintController {
     private SprintService sprintService;
 
     @GetMapping
-    public ResponseEntity<List<SprintDTO>> getAllSprints() {
+    public ResponseEntity<ApiResponseDTO<List<SprintDTO>>> getAllSprints() {
         List<SprintDTO> sprints = sprintService.getAllSprints();
-        return ResponseEntity.ok(sprints);
+        return ResponseEntity.ok(ApiResponseDTO.success(sprints, "Sprints recuperados com sucesso"));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SprintDTO> getSprintById(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<SprintDTO>> getSprintById(@PathVariable String id) {
         SprintDTO sprint = sprintService.getSprintById(id);
-        return ResponseEntity.ok(sprint);
+        return ResponseEntity.ok(ApiResponseDTO.success(sprint, "Sprint encontrado com sucesso"));
     }
 
     @PostMapping
-    public ResponseEntity<SprintDTO> createSprint(@RequestBody SprintCreateDTO createDTO) {
+    public ResponseEntity<ApiResponseDTO<SprintDTO>> createSprint(@RequestBody SprintCreateDTO createDTO) {
         SprintDTO createdSprint = sprintService.createSprint(createDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdSprint);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.success(createdSprint, "Sprint criado com sucesso"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SprintDTO> updateSprint(@PathVariable String id, @RequestBody SprintCreateDTO updateDTO) {
+    public ResponseEntity<ApiResponseDTO<SprintDTO>> updateSprint(@PathVariable String id, @RequestBody SprintCreateDTO updateDTO) {
         SprintDTO updatedSprint = sprintService.updateSprint(id, updateDTO);
-        return ResponseEntity.ok(updatedSprint);
+        return ResponseEntity.ok(ApiResponseDTO.success(updatedSprint, "Sprint atualizado com sucesso"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSprint(@PathVariable String id) {
+    public ResponseEntity<ApiResponseDTO<Void>> deleteSprint(@PathVariable String id) {
         sprintService.deleteSprint(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseDTO.success(null, "Sprint excluído com sucesso"));
     }
 }

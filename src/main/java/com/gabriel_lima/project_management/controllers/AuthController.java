@@ -1,9 +1,7 @@
 package com.gabriel_lima.project_management.controllers;
 
 import com.gabriel_lima.project_management.domain.entities.User;
-import com.gabriel_lima.project_management.dto.AuthenticationDTO;
-import com.gabriel_lima.project_management.dto.AuthenticationResponseDTO;
-import com.gabriel_lima.project_management.dto.CreateUserDTO;
+import com.gabriel_lima.project_management.dto.*;
 import com.gabriel_lima.project_management.services.JwtService;
 import com.gabriel_lima.project_management.repositories.UserRepository;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -28,21 +26,31 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponseDTO> login(@RequestBody AuthenticationDTO body) {
-        User user = this.userRepository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("User Not Found"));
+    public ResponseEntity<ApiResponseDTO<AuthenticationResponseDTO>> login(@RequestBody AuthenticationDTO body) {
+        Optional<User> userOpt = this.userRepository.findByEmail(body.email());
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponseDTO.error("Credenciais inválidas", "Usuário não encontrado"));
+        }
+
+        User user = userOpt.get();
         if (passwordEncoder.matches(body.password(), user.getPassword())) {
             var tokenResponse = jwtService.generateTokenResponse(user);
-            return ResponseEntity.ok(tokenResponse);
+            return ResponseEntity.ok(ApiResponseDTO.success(tokenResponse, "Login realizado com sucesso"));
         }
-        return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.badRequest()
+                .body(ApiResponseDTO.error("Credenciais inválidas", "Senha incorreta"));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponseDTO> register(@RequestBody CreateUserDTO body) {
-        Optional<User> user = this.userRepository.findByEmail(body.email());
-        if (user.isPresent()) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<ApiResponseDTO<AuthenticationResponseDTO>> register(@RequestBody CreateUserDTO body) {
+        Optional<User> existingUser = this.userRepository.findByEmail(body.email());
+        if (existingUser.isPresent()) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponseDTO.error("Email já está em uso", "Usuário já existe com este email"));
         }
+
         User newUser = new User();
         newUser.setName(body.name());
         newUser.setEmail(body.email());
@@ -51,6 +59,6 @@ public class AuthController {
         this.userRepository.save(newUser);
 
         var tokenResponse = jwtService.generateTokenResponse(newUser);
-        return ResponseEntity.ok(tokenResponse);
+        return ResponseEntity.ok(ApiResponseDTO.success(tokenResponse, "Usuário registrado com sucesso"));
     }
 }
